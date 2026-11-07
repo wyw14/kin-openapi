@@ -44,6 +44,18 @@ type Options struct {
 	// method returning the validated request body value, defaults included
 	KeepValidatedValue bool
 
+	// GzipRequestBody, when non-nil, enables explicit validation of JSON
+	// ("application/json" or a "+json" media type) request bodies sent with
+	// "Content-Encoding: gzip": the body is decompressed and the decoded value
+	// is validated against the requestBody schema. The request itself is left
+	// compressed for downstream handlers.
+	//
+	// When nil (the default), request bodies are read as-is and behavior is
+	// unchanged. Only identity or a single gzip content coding is accepted;
+	// content-coding stacks and any other coding are rejected before the body
+	// is read. See GzipRequestBodyOptions for details.
+	GzipRequestBody *GzipRequestBodyOptions
+
 	customSchemaErrorFunc CustomSchemaErrorFunc
 
 	// Additional schema validation options to pass through to schema validation.

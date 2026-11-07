@@ -287,6 +287,16 @@ func ValidateRequestBody(ctx context.Context, input *RequestValidationInput, req
 		options = &Options{}
 	}
 
+	// Explicit gzip request-body validation mode: handles identity or a
+	// single gzip content coding. An absent/identity coding falls through
+	// to the regular, unchanged path. Unsupported and stacked codings are
+	// rejected before the body is read.
+	if options.GzipRequestBody != nil && req.Body != http.NoBody && req.Body != nil {
+		if handled, err := validateGzipRequestBody(input, requestBody, options); handled {
+			return err
+		}
+	}
+
 	if req.Body != http.NoBody && req.Body != nil {
 		defer req.Body.Close()
 		var err error
